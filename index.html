@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kota Fresh Veggie</title>
+<style>
+:root{--g:#1f8f3a;--gl:#eaf7ed;--dark:#12351c;--muted:#6d786f;--bg:#f7faf7}
+*{box-sizing:border-box}body{margin:0;background:#eef3ef;font-family:Arial,sans-serif;color:#152018}
+.app{max-width:430px;margin:auto;min-height:100vh;background:#fff;box-shadow:0 0 30px #0001}
+header{padding:18px 18px 8px;background:#fff;position:sticky;top:0;z-index:2}
+.row{display:flex;align-items:center;justify-content:space-between}.small{font-size:12px;color:var(--muted)}
+h1{font-size:25px;margin:4px 0}.brand{color:var(--g);font-weight:800}
+.search{margin:12px 0;padding:13px 15px;border:1px solid #e2e8e3;border-radius:14px;background:#fafcfa}
+.search input{border:0;outline:0;width:90%;font-size:14px;background:transparent}
+.banner{margin:8px 16px;padding:18px;border-radius:18px;background:linear-gradient(135deg,#145e2a,#2aa64a);color:#fff}
+.banner b{font-size:18px}.banner p{margin:7px 0 13px;font-size:12px}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
+.shop{background:#fff;color:#16732c}.green{background:var(--g);color:#fff}.outline{background:#fff;border:1px solid #9bd0a6;color:var(--g)}
+.cats{display:flex;gap:10px;overflow:auto;padding:4px 16px 12px}.cat{min-width:78px;text-align:center;font-size:11px}.cat div{height:55px;border-radius:16px;background:var(--gl);display:grid;place-items:center;font-size:25px;margin-bottom:5px}
+section{padding:6px 16px}.sectionhead{display:flex;justify-content:space-between;align-items:center;margin:8px 0 12px}.sectionhead h2{font-size:17px;margin:0}.muted{color:var(--muted);font-size:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{border:1px solid #e7ece8;border-radius:16px;padding:10px;background:#fff}.pic{height:105px;border-radius:12px;background:#f2f7f2;display:grid;place-items:center;font-size:55px}.name{font-weight:700;margin-top:8px}.price{font-size:13px;margin:4px 0}.add{width:100%;padding:8px;margin-top:4px}
+nav{position:sticky;bottom:0;background:#fff;border-top:1px solid #e8ece9;display:flex;justify-content:space-around;padding:10px 4px;z-index:3}nav button{background:none;color:#66716a;font-size:11px;padding:4px}nav button.active{color:var(--g)}
+.page{display:none;padding-bottom:85px}.page.active{display:block}
+.cartline{display:flex;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #edf0ed}.emoji{font-size:35px;background:#f4f8f4;padding:8px;border-radius:12px}.grow{flex:1}.qty{display:flex;align-items:center;gap:8px}.qty button{padding:5px 9px;background:#eef7ef;color:var(--g)}
+.total{background:#f4f8f4;border-radius:16px;padding:15px;margin-top:14px}.total div{display:flex;justify-content:space-between;margin:7px 0}.grand{font-size:18px;font-weight:800;border-top:1px solid #dfe7e0;padding-top:9px}
+.pay{display:flex;gap:10px}.pay label{flex:1;border:1px solid #dfe7e0;border-radius:12px;padding:12px;font-size:12px}.pay input{accent-color:var(--g)}
+.orderbox{margin:14px 0;padding:16px;border-radius:16px;background:var(--gl)}.step{display:flex;gap:12px;margin:14px 0}.dot{width:18px;height:18px;border-radius:50%;background:var(--g);margin-top:2px}.pending{background:#d7dfd8}.toast{position:fixed;left:50%;bottom:75px;transform:translateX(-50%);background:#17351e;color:#fff;padding:10px 15px;border-radius:12px;font-size:12px;display:none}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="row"><div><div class="small">Deliver to</div><b>📍 Talwandi, Kota ▾</b></div><div>🔔</div></div>
+  <div class="search">🔎 <input id="search" placeholder="Search fruits & vegetables..." oninput="renderProducts()"></div>
+</header>
+
+<main>
+<div id="home" class="page active">
+  <div class="banner"><b>Fresh Fruits & Vegetables</b><p>Freshness delivered to your doorstep</p><button class="shop" onclick="show('products')">SHOP NOW</button></div>
+  <div class="cats">
+    <div class="cat"><div>🥦</div>Vegetables</div><div class="cat"><div>🍎</div>Fruits</div><div class="cat"><div>🥬</div>Leafy Greens</div><div class="cat"><div>🧺</div>Essentials</div>
+  </div>
+  <section><div class="sectionhead"><h2>Today's Fresh Picks</h2><span class="muted">See all ›</span></div><div id="homegrid" class="grid"></div></section>
+  <section><div class="sectionhead"><h2>Why Kota Fresh Veggie?</h2></div><div class="orderbox">🥬 Fresh Quality &nbsp; 🚚 Fast Delivery &nbsp; 🔒 Secure Payment</div></section>
+</div>
+
+<div id="products" class="page">
+  <section><div class="sectionhead"><h2>All Fresh Products</h2><span class="muted">Sort • Filter</span></div><div id="productgrid" class="grid"></div></section>
+</div>
+
+<div id="cart" class="page">
+  <section><div class="sectionhead"><h2>My Cart (<span id="count">0</span>)</h2></div><div id="cartitems"></div><div id="summary"></div></section>
+</div>
+
+<div id="checkout" class="page">
+  <section><div class="sectionhead"><h2>Checkout</h2></div>
+  <h3>Delivery Address</h3><div class="orderbox">🏠 Home<br><b>123, Talwandi, Kota, Rajasthan</b><br><span class="muted">+91 98765 43210</span></div>
+  <h3>Payment Method</h3><div class="pay">
+    <label><input type="radio" name="pay" value="online" checked> Online Payment<br><span class="muted">UPI / Card / Net Banking</span></label>
+    <label><input type="radio" name="pay" value="cod"> Cash on Delivery</label>
+  </div>
+  <div id="checkoutTotal" class="total"></div><button class="green" style="width:100%;margin-top:12px" onclick="placeOrder()">PLACE ORDER</button>
+  </section>
+</div>
+
+<div id="orders" class="page">
+  <section><div class="sectionhead"><h2>Order Tracking</h2></div><div id="orderStatus" class="orderbox">No orders yet. Place your first order from the cart.</div></section>
+</div>
+
+<div id="profile" class="page">
+  <section><div class="sectionhead"><h2>My Profile</h2></div><div class="orderbox">👤 <b>Customer</b><br><span class="muted">Manage address, phone and preferences</span></div><button class="outline" style="width:100%">Manage Addresses</button><br><br><button class="outline" style="width:100%">Help & Support</button></section>
+</div>
+</main>
+
+<nav>
+<button class="active" onclick="show('home',this)">⌂<br>Home</button>
+<button onclick="show('products',this)">▦<br>Categories</button>
+<button onclick="show('cart',this)">🛒<br>Cart</button>
+<button onclick="show('orders',this)">▣<br>Orders</button>
+<button onclick="show('profile',this)">◯<br>Profile</button>
+</nav>
+<div id="toast" class="toast"></div>
+</div>
+
+<script>
+const products=[
+{id:1,n:"Tomato",p:24,u:"/kg",e:"🍅"}, {id:2,n:"Potato",p:18,u:"/kg",e:"🥔"},
+{id:3,n:"Onion",p:22,u:"/kg",e:"🧅"}, {id:4,n:"Cucumber",p:28,u:"/kg",e:"🥒"},
+{id:5,n:"Carrot",p:35,u:"/kg",e:"🥕"}, {id:6,n:"Cauliflower",p:28,u:"/piece",e:"🥦"},
+{id:7,n:"Apple",p:120,u:"/kg",e:"🍎"}, {id:8,n:"Banana",p:55,u:"/dozen",e:"🍌"},
+{id:9,n:"Orange",p:80,u:"/kg",e:"🍊"}, {id:10,n:"Grapes",p:95,u:"/kg",e:"🍇"}
+];
+let cart={}, lastOrder=null;
+function money(n){return "₹"+n}
+function card(p){return `<div class="card"><div class="pic">${p.e}</div><div class="name">${p.n}</div><div class="price">${money(p.p)} <span class="muted">${p.u}</span></div><button class="outline add" onclick="add(${p.id})">+ ADD</button></div>`}
+function renderProducts(){
+ let q=(document.getElementById('search').value||'').toLowerCase();
+ let list=products.filter(p=>p.n.toLowerCase().includes(q));
+ document.getElementById('productgrid').innerHTML=list.map(card).join('');
+ document.getElementById('homegrid').innerHTML=products.slice(0,4).map(card).join('');
+}
+function add(id){cart[id]=(cart[id]||0)+1;toast("Added to cart");renderCart()}
+function change(id,d){cart[id]=(cart[id]||0)+d;if(cart[id]<=0)delete cart[id];renderCart()}
+function renderCart(){
+ let ids=Object.keys(cart);let count=ids.reduce((s,id)=>s+cart[id],0);
+ document.getElementById('count').textContent=count;
+ let el=document.getElementById('cartitems');
+ el.innerHTML=ids.length?ids.map(id=>{let p=products.find(x=>x.id==id);return `<div class="cartline"><div class="emoji">${p.e}</div><div class="grow"><b>${p.n}</b><div class="muted">${money(p.p)} ${p.u}</div></div><div class="qty"><button onclick="change(${p.id},-1)">−</button><b>${cart[id]}</b><button onclick="change(${p.id},1)">+</button></div></div>`}).join(''):"<div class='orderbox'>Your cart is empty. Add some fresh products 🥬</div>";
+ let sub=ids.reduce((s,id)=>s+products.find(x=>x.id==id).p*cart[id],0), del=ids.length?10:0,total=sub+del;
+ document.getElementById('summary').innerHTML=ids.length?`<div class="total"><div><span>Subtotal</span><b>${money(sub)}</b></div><div><span>Delivery</span><b>${money(del)}</b></div><div class="grand"><span>Total</span><b>${money(total)}</b></div><button class="green" style="width:100%;margin-top:10px" onclick="show('checkout')">PROCEED TO CHECKOUT</button></div>`:"";
+ document.getElementById('checkoutTotal').innerHTML=`<div><span>Total Amount</span><b>${money(total)}</b></div>`;
+}
+function show(id,btn){
+ document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');
+ document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));if(btn)btn.classList.add('active');
+ if(id==='cart')renderCart(); if(id==='checkout')renderCart(); if(id==='orders')renderOrder();
+ window.scrollTo(0,0);
+}
+function placeOrder(){
+ if(!Object.keys(cart).length){toast("Cart is empty");show('products');return}
+ let pay=document.querySelector('input[name=pay]:checked').value;
+ lastOrder={id:"KFV"+Math.floor(100000+Math.random()*900000),pay,time:new Date().toLocaleString(),status:2};
+ cart={};renderCart();renderOrder();toast("Order placed successfully!");show('orders');
+}
+function renderOrder(){
+ document.getElementById('orderStatus').innerHTML=lastOrder?`<b>Order #${lastOrder.id}</b><br><span class="muted">${lastOrder.pay==='cod'?'Cash on Delivery':'Online Payment'} • ${lastOrder.time}</span>
+ <div class="step"><span class="dot"></span><div><b>Order Placed</b><br><span class="muted">We received your order</span></div></div>
+ <div class="step"><span class="dot"></span><div><b>Accepted</b><br><span class="muted">Store is preparing it</span></div></div>
+ <div class="step"><span class="dot"></span><div><b>Packed</b><br><span class="muted">Fresh products packed</span></div></div>
+ <div class="step"><span class="dot pending"></span><div><b>Out for Delivery</b><br><span class="muted">Coming to your doorstep</span></div></div>
+ <div class="step"><span class="dot pending"></span><div><b>Delivered</b></div></div>`:"No orders yet. Place your first order from the cart.";
+}
+function toast(t){let x=document.getElementById('toast');x.textContent=t;x.style.display='block';setTimeout(()=>x.style.display='none',1600)}
+renderProducts();renderCart();renderOrder();
+</script>
+</body>
+</html>
