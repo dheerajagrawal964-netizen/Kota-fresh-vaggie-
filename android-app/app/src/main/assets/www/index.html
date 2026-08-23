@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#178a3b">
+<title>Kota Fresh Veggie</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{--green:#16863a;--dark:#123b24;--light:#f3faf5;--muted:#6b7280;--card:#fff;--line:#e5e7eb}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:#f7faf7;color:#17251b}
+button,input,select{font:inherit}button{cursor:pointer;border:0}.app{max-width:480px;margin:auto;min-height:100vh;background:#fff;box-shadow:0 0 30px #0001}
+header{padding:18px 18px 10px;background:#fff;position:sticky;top:0;z-index:5;border-bottom:1px solid var(--line)}
+.brand{font-weight:900;font-size:22px;color:var(--green)}.sub{font-size:12px;color:var(--muted)}
+.search{margin-top:12px;display:flex;gap:8px}.search input{flex:1;padding:12px;border:1px solid var(--line);border-radius:12px}
+main{padding:16px 16px 92px}.hero{background:linear-gradient(135deg,#e9f8ec,#fff);border-radius:18px;padding:18px;margin-bottom:16px}
+.hero h1{margin:0 0 6px;font-size:25px}.hero p{margin:0;color:var(--muted)}
+.row{display:flex;gap:10px;overflow:auto;padding-bottom:5px}.chip{white-space:nowrap;padding:9px 13px;background:#f1f5f2;border-radius:20px}.chip.active{background:var(--green);color:#fff}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{border:1px solid var(--line);border-radius:16px;padding:12px;background:var(--card)}.emoji{font-size:48px;text-align:center;background:#f7fbf7;border-radius:12px;padding:12px}.card h3{font-size:15px;margin:10px 0 3px}.muted{color:var(--muted);font-size:12px}.price{font-weight:800;margin:7px 0}.add{width:100%;background:var(--green);color:#fff;padding:10px;border-radius:10px;font-weight:700}
+.section{display:flex;justify-content:space-between;align-items:center;margin:20px 0 10px}.section h2{font-size:18px;margin:0}
+.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);display:flex;background:#fff;border-top:1px solid var(--line);z-index:10}.nav{flex:1;padding:12px 4px;text-align:center;color:var(--muted);font-size:12px;background:#fff}.nav.active{color:var(--green);font-weight:800}
+.badge{background:#eaf7ed;color:var(--green);padding:3px 7px;border-radius:10px;font-size:11px}.cartrow{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);align-items:center}.cartrow .pic{font-size:32px}.qty{display:flex;align-items:center;gap:8px}.qty button{width:28px;height:28px;border-radius:8px;background:#eef6ef}
+.total{display:flex;justify-content:space-between;font-weight:900;font-size:18px;padding:18px 0}.primary{width:100%;padding:14px;border-radius:12px;background:var(--green);color:#fff;font-weight:800}.secondary{width:100%;padding:12px;border-radius:12px;background:#eef6ef;color:var(--dark);font-weight:700;margin-top:8px}
+.panel{border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}.status{display:flex;gap:10px;align-items:center;margin:12px 0}.dot{width:13px;height:13px;border-radius:50%;background:var(--green)}.admin{background:#102219;color:#fff;border-radius:16px;padding:16px}.admin .panel{background:#fff;color:#17251b}.hidden{display:none}.notice{padding:12px;background:#fff8df;border-radius:12px;font-size:13px;margin-bottom:12px}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand">🥬 KOTA FRESH VEGGIE</div>
+  <div class="sub">Freshness delivered to your doorstep</div>
+  <div class="search"><input id="search" placeholder="Search vegetables..." oninput="render()"><button onclick="show('cart')" class="chip">🛒 <span id="cartCount">0</span></button></div>
+</header>
+<main id="main"></main>
+<nav class="bottom">
+  <button class="nav active" onclick="show('home')">🏠<br>Home</button>
+  <button class="nav" onclick="show('categories')">🥦<br>Categories</button>
+  <button class="nav" onclick="show('orders')">📦<br>Orders</button>
+  <button class="nav" onclick="show('profile')">👤<br>Profile</button>
+  <button class="nav" onclick="show('admin')">⚙️<br>Admin</button>
+</nav>
+</div>
+<script>
+const products=[
+{id:1,n:"Tomato",cat:"Vegetables",p:24,u:"500g",e:"🍅",stock:20,r:4.8},{id:2,n:"Potato",cat:"Vegetables",p:18,u:"1kg",e:"🥔",stock:30,r:4.7},
+{id:3,n:"Onion",cat:"Vegetables",p:32,u:"1kg",e:"🧅",stock:25,r:4.6},{id:4,n:"Cauliflower",cat:"Vegetables",p:35,u:"1 pc",e:"🥦",stock:12,r:4.5},
+{id:5,n:"Carrot",cat:"Vegetables",p:40,u:"500g",e:"🥕",stock:18,r:4.8},{id:6,n:"Capsicum",cat:"Vegetables",p:55,u:"500g",e:"🫑",stock:10,r:4.4},
+{id:7,n:"Cucumber",cat:"Vegetables",p:30,u:"500g",e:"🥒",stock:16,r:4.7},{id:8,n:"Spinach",cat:"Leafy Greens",p:25,u:"1 bunch",e:"🌿",stock:14,r:4.6},
+{id:9,n:"Banana",cat:"Fruits",p:45,u:"1 dozen",e:"🍌",stock:22,r:4.7},{id:10,n:"Apple",cat:"Fruits",p:120,u:"1kg",e:"🍎",stock:9,r:4.8}];
+let cart=JSON.parse(localStorage.kfv_cart||"[]"), orders=JSON.parse(localStorage.kfv_orders||"[]"), user=JSON.parse(localStorage.kfv_user||"null"), wishlist=JSON.parse(localStorage.kfv_wish||"[]"), addresses=JSON.parse(localStorage.kfv_addresses||"[]"), page="home", category="All";
+
+function save(){localStorage.kfv_cart=JSON.stringify(cart);localStorage.kfv_orders=JSON.stringify(orders);localStorage.kfv_wish=JSON.stringify(wishlist);localStorage.kfv_addresses=JSON.stringify(addresses);document.getElementById("cartCount").textContent=cart.reduce((a,x)=>a+x.q,0)}
+function wish(id){wishlist=wishlist.includes(id)?wishlist.filter(x=>x!==id):[...wishlist,id];save();render()}
+function coupon(){let c=prompt("Coupon code","FRESH10"); if(c&&c.toUpperCase()==="FRESH10"){localStorage.kfv_coupon="10";alert("10% discount applied")}else if(c)alert("Try FRESH10")}
+function cancelOrder(id){let o=orders.find(x=>x.id===id);if(o&&confirm("Cancel this order?")){o.status="Cancelled";save();render()}}
+function addAddress(){let a=prompt("Enter delivery address");if(a){addresses.push(a);save();render()}}
+function support(){alert("Kota Fresh Veggie Support\n\nCall: 1800-FRESH-KOTA\nSupport hours: 8 AM – 10 PM\nFor demo, this opens a support message only.")}
+
+function show(p){page=p;render()}
+function add(id){let x=cart.find(x=>x.id===id);x?x.q++:cart.push({id,q:1});save();render()}
+function change(id,d){let x=cart.find(x=>x.id===id);if(!x)return;x.q+=d;if(x.q<1)cart=cart.filter(y=>y.id!==id);save();render()}
+function productCard(x){let wished=wishlist.includes(x.id);return `<div class="card"><div class="emoji">${x.e}</div><button style="float:right;background:transparent;font-size:20px" onclick="wish(${x.id})">${wished?"❤️":"♡"}</button><h3>${x.n}</h3><div class="muted">${x.u} • ⭐ ${x.r}</div><div class="price">₹${x.p}</div><div class="muted">${x.stock>0?x.stock+" in stock":"Out of stock"}</div><button class="add" ${x.stock<1?"disabled":""} onclick="add(${x.id})">${x.stock<1?"OUT OF STOCK":"ADD TO CART"}</button></div>`}
+function render(){
+ save();let el=document.getElementById("main");
+ if(page==="home"){let q=document.getElementById("search").value.toLowerCase();let list=products.filter(x=>(category==="All"||x.cat===category)&&x.n.toLowerCase().includes(q));el.innerHTML=`<div class="hero"><h1>100% Fresh Vegetables</h1><p>Direct from trusted local farmers. Fast delivery across Kota.</p><div style="margin-top:12px"><span class="badge">FREE delivery above ₹199</span> <span class="badge">FRESH10 = 10% OFF</span></div></div><div class="section"><h2>Shop by category</h2></div><div class="row">${["All","Vegetables","Leafy Greens","Fruits"].map(c=>`<button class="chip ${category===c?'active':''}" onclick="category='${c}';render()">${c}</button>`).join("")}</div><div class="section"><h2>Today's Fresh Picks</h2><span class="badge">Best quality</span></div><div class="grid">${list.map(productCard).join("")}</div>`}
+ if(page==="categories"){el.innerHTML=`<div class="section"><h2>Categories</h2></div><div class="grid">${["Vegetables","Leafy Greens","Fruits"].map(c=>`<div class="card" onclick="category='${c}';show('home')"><div class="emoji">${c==="Vegetables"?"🥕":c==="Leafy Greens"?"🥬":"🍎"}</div><h3>${c}</h3><div class="muted">${products.filter(x=>x.cat===c).length} products</div></div>`).join("")}</div>`}
+ if(page==="cart"){let total=cart.reduce((a,x)=>a+(products.find(p=>p.id===x.id).p*x.q),0);el.innerHTML=`<div class="section"><h2>Your Cart</h2></div>${cart.length?cart.map(x=>{let p=products.find(p=>p.id===x.id);return `<div class="cartrow"><div class="pic">${p.e}</div><div style="flex:1"><b>${p.n}</b><div class="muted">₹${p.p} • ${p.u}</div></div><div class="qty"><button onclick="change(${p.id},-1)">−</button><b>${x.q}</b><button onclick="change(${p.id},1)">+</button></div></div>`}).join("")+`<div class="total"><span>Total</span><span>₹${total}</span></div><button class="primary" onclick="checkout()">PLACE ORDER</button>`:`<div class="panel">Your cart is empty.</div>`}
+ if(page==="checkout"){let saved=addresses[0]||"";el.innerHTML=`<div class="section"><h2>Checkout</h2></div><div class="notice">Payment gateway is disabled as requested. This prototype uses a non-payment demo order flow.</div><div class="panel"><b>Delivery address</b><br><input id="addr" value="${saved}" style="width:100%;margin-top:10px;padding:12px;border:1px solid var(--line);border-radius:10px" placeholder="House, area, Kota"><button class="secondary" onclick="addAddress()">SAVE NEW ADDRESS</button></div><div class="panel"><b>Delivery slot</b><select id="slot" style="width:100%;margin-top:10px;padding:12px;border:1px solid var(--line);border-radius:10px"><option>Today, 6–8 PM</option><option>Today, 8–10 PM</option><option>Tomorrow, 8–10 AM</option><option>Tomorrow, 6–8 PM</option></select></div><div class="panel"><b>Coupon</b><button class="secondary" onclick="coupon()">APPLY FRESH10</button></div><button class="primary" onclick="placeOrder()">CONFIRM ORDER</button>`}
+ if(page==="orders"){el.innerHTML=`<div class="section"><h2>My Orders</h2></div>${orders.length?orders.slice().reverse().map((o,i)=>`<div class="panel"><b>Order #${o.id}</b><span class="badge" style="float:right">${o.status}</span><p class="muted">${o.items.map(x=>x.n+" × "+x.q).join(", ")}</p><b>₹${o.total}</b><button class="secondary" onclick="track('${o.id}')">TRACK ORDER</button>${o.status!=="Cancelled"&&o.status!=="Delivered"?`<button class="secondary" onclick="cancelOrder('${o.id}')">CANCEL ORDER</button>`:""}</div>`).join(""):`<div class="panel">No orders yet.</div>`}
+ if(page==="tracking"){let o=orders[orders.length-1];el.innerHTML=`<div class="section"><h2>Order Tracking</h2></div><div class="panel"><b>Order #${o.id}</b><div class="status"><span class="dot"></span>Order placed</div><div class="status"><span class="dot"></span>Accepted by store</div><div class="status"><span class="dot"></span>Packed</div><div class="status"><span class="dot"></span>Out for delivery</div><div class="status"><span class="dot"></span>Delivered</div><p class="muted">Delivery partner: Rahul • ETA: 30–45 min</p></div>`}
+ if(page==="profile"){el.innerHTML=`<div class="section"><h2>Profile</h2></div><div class="panel"><b>${user?.name||"Guest User"}</b><p class="muted">${user?.phone||"Login/signup is simulated locally for this prototype."}</p></div><button class="primary" onclick="login()">LOGIN / SIGN UP</button><button class="secondary" onclick="show('wishlist')">❤️ WISHLIST (${wishlist.length})</button><button class="secondary" onclick="show('addresses')">📍 SAVED ADDRESSES (${addresses.length})</button><button class="secondary" onclick="support()">💬 CUSTOMER SUPPORT</button>`}
+ if(page==="wishlist"){let ws=products.filter(x=>wishlist.includes(x.id));el.innerHTML=`<div class="section"><h2>Wishlist</h2></div>${ws.length?`<div class="grid">${ws.map(productCard).join("")}</div>`:`<div class="panel">No saved products yet. Tap ♡ on any product to save it.</div>`}
+ if(page==="addresses"){el.innerHTML=`<div class="section"><h2>Saved Addresses</h2></div>${addresses.map((a,i)=>`<div class="panel">📍 ${a}<button class="secondary" onclick="addresses.splice(${i},1);save();render()">REMOVE</button></div>`).join("")}<button class="primary" onclick="addAddress()">ADD ADDRESS</button>`}
+ if(page==="admin"){el.innerHTML=`<div class="admin"><h2>Admin Panel</h2><p>Manage products, inventory, orders and deliveries.</p><div class="panel"><b>Products & Inventory</b><p>${products.length} products • Low-stock alerts: ${products.filter(x=>x.stock<12).length}</p></div><div class="panel"><b>Offers</b><p>FRESH10 • 10% off demo coupon • Free delivery above ₹199</p></div><div class="panel"><b>Orders</b><p>${orders.length} total orders • Delivery queue ready</p></div><div class="panel"><b>Delivery Management</b><p>Driver assignment: Rahul<br>Route optimization: Enabled (demo)</p></div><div class="panel"><b>Notifications</b><p>Push notification workflow: Enabled (demo)</p></div></div>`}
+}
+function checkout(){if(!cart.length)return;page="checkout";render()}
+function placeOrder(){let addr=document.getElementById("addr").value.trim()||"Kota, Rajasthan";let items=cart.map(x=>{let p=products.find(p=>p.id===x.id);return {n:p.n,q:x.q}}),total=cart.reduce((a,x)=>a+products.find(p=>p.id===x.id).p*x.q,0);let discount=localStorage.kfv_coupon==="10"?Math.round(total*.10):0; total-=discount; orders.push({id:"KFV"+Date.now().toString().slice(-6),items,total,status:"Order placed",address:addr,slot:document.getElementById("slot")?.value||"Today, 6–8 PM",discount}); localStorage.removeItem("kfv_coupon");cart=[];save();page="orders";render();alert("Order confirmed!")}
+function track(id){page="tracking";render()}
+function login(){let name=prompt("Enter your name","Customer");if(name){user={name,phone:"Local demo account"};localStorage.kfv_user=JSON.stringify(user);render()}}
+render();
+</script>
+</body></html>

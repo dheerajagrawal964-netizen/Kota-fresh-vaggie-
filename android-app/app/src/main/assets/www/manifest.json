@@ -1,0 +1,9 @@
+{
+  "name": "Kota Fresh Veggie",
+  "short_name": "Kota Veggie",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#16863a",
+  "icons": []
+}
